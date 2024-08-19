@@ -106,6 +106,10 @@ int regulator_enable(const struct device *dev);
  */
 int regulator_disable(const struct device *dev);
 
+int regulator_force_enable(const struct device *dev);
+int regulator_force_disable(const struct device *dev);
+
+
 /**
  * @brief Obtain the number of supported voltage levels.
  *

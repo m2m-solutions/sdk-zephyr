@@ -63,3 +63,40 @@ int regulator_disable(const struct device *dev)
 
 	return ret;
 }
+int regulator_force_enable(const struct device *dev)
+{
+	struct regulator_common_data *data =
+		(struct regulator_common_data *)dev->data;
+	int ret = 0;
+
+	(void)k_mutex_lock(&data->lock, K_FOREVER);
+	data->refcnt = 1;
+
+	const struct regulator_driver_api *api =
+		(const struct regulator_driver_api *)dev->api;
+
+	ret = api->enable(dev);
+
+	k_mutex_unlock(&data->lock);
+
+	return ret;
+}
+
+int regulator_force_disable(const struct device *dev)
+{
+	struct regulator_common_data *data =
+		(struct regulator_common_data *)dev->data;
+	int ret = 0;
+
+	(void)k_mutex_lock(&data->lock, K_FOREVER);
+	data->refcnt = 0;
+
+	const struct regulator_driver_api *api =
+		(const struct regulator_driver_api *)dev->api;
+
+	ret = api->disable(dev);
+
+	k_mutex_unlock(&data->lock);
+
+	return ret;
+}
